@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { GetServerSideProps } from "next";
-=======
 import { GetStaticProps } from "next";
->>>>>>> nova-branch
 
 import Head from "next/head";
 import { SubscribeButton } from "../components/SubscribeButton";
@@ -42,11 +38,7 @@ export default function Home({ product }: HomeProps) {
   );
 }
 
-<<<<<<< HEAD
-export const getServerSideProps: GetServerSideProps = async () => {
-=======
 export const getStaticProps: GetStaticProps = async () => {
->>>>>>> nova-branch
   const price = await stripe.prices.retrieve("price_1LqJoUIJxdUaTe9OIVYI5ir2");
 
   const product = {
@@ -61,9 +53,6 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       product,
     },
-<<<<<<< HEAD
-=======
     revalidate: 60 * 60 * 24, // 24 hours
->>>>>>> nova-branch
   };
 };
