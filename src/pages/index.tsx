@@ -18,6 +18,7 @@ export default function Home({ product }: HomeProps) {
       <Head>
         <title>Home | Ignews</title>
       </Head>
+      
       <main className={styles.contantContainer}>
         <section className={styles.hero}>
           <span>👏 Hey, welcome</span>
@@ -26,7 +27,7 @@ export default function Home({ product }: HomeProps) {
           </h1>
           <p>
             Get access to all the publication <br />
-            <span>for {product.amount} month</span>
+            <span>{`for ${product.amount} month`}</span>
           </p>
 
           <SubscribeButton priceId={product.priceId} />
