@@ -8,7 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     console.log(sessions)
 
     const stripeCustomer = await stripe.customers.create({
-      email: sessions.user.email,
+      email: sessions.user.email
       // metadata
     });
 
