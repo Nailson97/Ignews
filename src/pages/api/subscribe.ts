@@ -15,17 +15,17 @@ type User = {
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
-    const sessions = await getSession({ req });
+    const session = await getSession({ req });
 
     const user = await fauna.query<User>(
-      q.Get(q.Match(q.Index("user_by_email"), q.Casefold(sessions.user.email)))
+      q.Get(q.Match(q.Index("user_by_email"), q.Casefold(session.user.email)))
     );
 
     let customerId = user.data.stripe_customer_id;
 
     if (!customerId) {
       const stripeCustomer = await stripe.customers.create({
-        email: sessions.user.email,
+        email: session.user.email,
       });
 
       await fauna.query(
