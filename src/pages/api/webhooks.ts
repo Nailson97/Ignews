@@ -8,7 +8,7 @@ async function buffer(readable: Readable) {
   const chunks = [];
 
   for await (const chunk of readable) {
-    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
   }
 
   return Buffer.concat(chunks);
@@ -29,7 +29,7 @@ const relevantEvents = new Set ([
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     const buf = await buffer(req);
-    const secret = req.headers["stripe-signature"];
+    const secret = req.headers['stripe-signature'];
 
     let event: Stripe.Event;
 
@@ -39,14 +39,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         secret,
         process.env.STRIPE_WEBHOOK_SECRET
       );
-    } catch (err) {
-      console.log(err, 'erro 2')
-      return res.status(400).send(`Webhook error: ${err.message}`);
+    } catch (error) {
+      console.log(error, 'erro 2')
+      return res.status(400).send(`Webhook error: ${error.message}`);
     }
 
     const { type } = event;
 
     if (relevantEvents.has(type)) {
+      console.log('Evento recebido', event)
       try {
         switch (type) {
           case 'customer.subscription.updated':
@@ -73,9 +74,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           default:
             throw new Error("Unhanled event.");
         }
-      } catch (err) {
-       
-        console.log(err,  'aqui está o erro!')
+      } catch (error) {       
+        console.log(error,  'aqui está o erro!')
         return res.status(400).json({ error: "Webhook handle file" });
       }
     }
