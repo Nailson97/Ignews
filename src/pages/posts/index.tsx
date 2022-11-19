@@ -1,8 +1,20 @@
 import Head from "next/head";
 import { getPrismicClient } from "../../services/prismic";
+import { RichText } from "prismic-dom";
 import styles from "./styles.module.scss";
 
-export default function Posts() {
+type Post = {
+  slug: string;
+  title: string;
+  excerpti: string;
+  updatedAt: string;
+};
+
+interface postsProps {
+  posts: Post[];
+}
+
+export default function Posts({ posts }: postsProps) {
   return (
     <>
       <Head>
@@ -11,50 +23,44 @@ export default function Posts() {
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          <a href='#'>
-            <time> 16 de novembro de 2022</time>
-            <strong>Creating new World</strong>
-            <p>
-              ReactJS is an open-source JavaScript library that first made an
-              official appearance in 2013. It was developed by Facebook with the
-              sole objective of creating rich, value-loaded, and engaging web.
-            </p>
-          </a>
-
-          <a href='#'>
-            <time> 16 de novembro de 2022</time>
-            <strong>Creating new World</strong>
-            <p>
-              ReactJS is an open-source JavaScript library that first made an
-              official appearance in 2013.It was developed by Facebook with the
-              sole objective of creating rich, value-loaded, and engaging web.
-            </p>
-          </a>
-
-          <a href='#'>
-            <time> 16 de novembro de 2022</time>
-            <strong>Creating new World</strong>
-            <p>
-              ReactJS is an open-source JavaScript library that first made an
-              official appearance in 2013. It was developed by Facebook with the
-              sole objective of creating rich, value-loaded, and engaging web.
-            </p>
-          </a>
+          {posts.map((post) => (
+            <a key={post.slug} href={"#"}>
+              <time>{post.updatedAt}</time>
+              <strong>{post.title}</strong>
+              <p>{post.excerpti}</p>
+            </a>
+          ))}
+          
         </div>
       </main>
     </>
-  ); 
+  );
 }
 
 export async function getServerSideProps() {
-  const prismic = getPrismicClient()
+  const prismic = getPrismicClient();
 
-  const posts = await prismic.getByType("publication", {
+  const responsePosts = await prismic.getByType("publication", {
     pageSize: 100,
   });
 
-  console.log(JSON.stringify(posts, null, 2));
-  
+  const posts = responsePosts.results.map((post) => {
+    return {
+      slug: post.uid,
+      title: RichText.asText(post.data.title),
+      excerpti:
+        post.data.content.find((content) => content.type == "paragraph")?.text ?? "",
+      updatedAt: new Date(post.last_publication_date).toLocaleDateString(
+        "pt-br",
+        {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        }
+      ),
+    };
+  });
+
   return {
     props: { posts },
   };
