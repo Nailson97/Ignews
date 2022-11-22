@@ -18,7 +18,43 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    async session({session}) {
+      try {
+        const userActiveSubscription = await fauna.query<string>(
+          q.Get(
+           q.Intersection([
+            q.Match(
+              q.Index('subscription_by_user_ref'),
+              q.Select(
+                "ref",
+                q.Get(
+                  q.Match(
+                    q.Index('user_by_email'),
+                     q.Casefold(String(session?.user?.email))
+                    )
+                   )
+                  )
+                 ),
+                q.Match(
+                 q.Index('subscription_by_status'),
+                 "active"
+               )
+            ])
+          )
+        )
+        return {
+          ...session,
+          activeSubscription: userActiveSubscription
+        }
+      } catch (err) {
+        console.log(err, 'erro no catch')
+        return {
+          ...session,
+          activeSubscription: null,
+        }
+      }
+    },
+     async signIn({ user, account, profile, email, credentials }) {
       try {
         await fauna.query(
           q.Let(
