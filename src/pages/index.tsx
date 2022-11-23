@@ -9,8 +9,10 @@ interface HomeProps {
   product: {
     priceId: string;
     amount: Number;
-  };
+  }
 }
+
+
 
 export default function Home({ product }: HomeProps) {
   return (
