@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { getStaticProps } from "../../pages";
-import Posts from "../../pages/posts";
+import Posts, { getServerSideProps } from "../../pages/posts";
 import { getPrismicClient } from "../../services/prismic";
 
 const posts = [
@@ -26,19 +25,17 @@ describe("Post page", () => {
     const getPrismicClientMocked = jest.mocked(getPrismicClient);
 
     getPrismicClientMocked.mockReturnValueOnce({
-      getByUID: jest.fn().mockResolvedValueOnce({
+      getByType: jest.fn().mockResolvedValueOnce({
         uid: "my-new-post", // Adicionar o mesmo UID
         data: {
           title: [{ type: "heading", text: "My new post" }],
-          content: [{ type: "paragraph", text: "Post content" }],
+          content: [{ type: "paragraph", text: "Post content" }], 
         },
         last_publication_date: "03-22-2023",
       }),
     } as any);
 
-    const response = await getStaticProps({
-        previewData: undefined,
-    });
+    const response = await getServerSideProps();
 
     expect(response).toEqual(
       expect.objectContaining({

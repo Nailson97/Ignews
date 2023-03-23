@@ -25,8 +25,8 @@ export default function Posts({ posts }: postsProps) {
       <main className={styles.container}>
         <div className={styles.posts}>
           {posts.map((post) => (
-            <Link  key={post.slug} href={`/posts/${post.slug}`}>
-              <a key={post.slug}>
+            <Link key={post.slug} href={`/posts/${post.slug}`}>
+              <a>
                 <time>{post.updatedAt}</time>
                 <strong>{post.title}</strong>
                 <p>{post.excerpti}</p>
@@ -51,8 +51,7 @@ export async function getServerSideProps() {
     return {
       slug: post.uid,
       title: RichText.asText(post.data.title),
-      excerpti:
-        post.data.content.find((content) => content.type == "paragraph")?.text ?? "",
+      excerpti: post.data.content.find((content) => content.type == "paragraph")?.text ?? "",
       updatedAt: new Date(post.last_publication_date).toLocaleDateString(
         "pt-br",
         {
